@@ -1,0 +1,1 @@
+{{-- Folder editing page --}}

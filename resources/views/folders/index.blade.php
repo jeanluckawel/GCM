@@ -1,128 +1,94 @@
 @extends('layouts.app')
 
+@section('title', 'Dossiers')
+
 @section('content')
+    <x-layouts.page-header
+        title="Dossiers"
+        description="Parcourez les dossiers des employés et ouvrez rapidement un espace documentaire."
+    >
+        <x-slot:breadcrumbs>
+            <x-navigation.breadcrumb
+                :items="[
+                    ['label' => 'Accueil', 'url' => route('dashboard')],
+                    ['label' => 'Dossiers'],
+                ]"
+            />
+        </x-slot:breadcrumbs>
 
-    <div class="row p-lg-5">
+        <x-slot:actions>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <x-ui.button href="{{ route('folder.create') }}" variant="primary">
+                    <i class="bi bi-plus-lg"></i>
+                    Nouveau dossier employé
+                </x-ui.button>
 
-        <div class="col-12">
+                <x-ui.button href="{{ route('folder.document.create') }}" variant="secondary">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    Ajouter un document à un dossier existant
+                </x-ui.button>
 
-            <div class="card">
+                <form action="{{ route('folder.index') }}" method="GET" class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <x-ui.search-input
+                        name="search"
+                        :value="$search"
+                        placeholder="Rechercher un dossier"
+                        class="w-full sm:w-80"
+                    />
 
-                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="flex items-center gap-2">
+                        <x-ui.button type="submit" variant="primary">
+                            <i class="bi bi-search"></i>
+                            Rechercher
+                        </x-ui.button>
 
-                    <h3 class="card-title">
-                        <i class="bi bi-folder-fill me-2"></i>
-                        Mes Dossiers
-                    </h3>
-
-
-                    <div class="d-flex gap-2">
-
-
-                        <div class="input-group input-group-sm" style="width: 200px;">
-
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Search...">
-
-                            <button class="btn btn-outline-secondary">
-                                <i class="bi bi-search"></i>
-                            </button>
-
-                        </div>
-
-
-
-                        <a href="#" class="btn btn-primary btn-sm">
-                            <i class="bi bi-plus-lg"></i>
-                            Add
-                        </a>
-
+                        @if($search !== '')
+                            <x-ui.button href="{{ route('folder.index') }}" variant="ghost">
+                                Réinitialiser
+                            </x-ui.button>
+                        @endif
                     </div>
+                </form>
+            </div>
+        </x-slot:actions>
+    </x-layouts.page-header>
 
-                </div>
+    <div class="mt-6">
+        @if(session('success'))
+            <div class="mb-6">
+                <x-ui.alert variant="success">
+                    {{ session('success') }}
+                </x-ui.alert>
+            </div>
+        @endif
 
+        @if($folders->count() > 0)
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <x-ui.badge variant="neutral">
+                    {{ $folders->count() }} dossier(s)
+                </x-ui.badge>
 
-                <div class="card-body">
-
-
-                    <div class="row">
-
-
-                        @php
-                            $colors = [
-                                '#2596be',
-                                '#dc3545',
-                                '#198754',
-                                '#ffc107'
-                            ];
-                        @endphp
-
-
-
-                        @foreach($folders as $folder)
-
-
-                            @php
-                                $color = $colors[$folder->id % count($colors)];
-                            @endphp
-
-
-
-                            <div class="col-12 col-sm-6 col-md-3">
-
-
-                                <a href="{{ route('folders.show', $folder->id) }}" class="text-decoration-none text-dark">
-
-                                    <div class="info-box">
-
-            <span class="info-box-icon shadow-sm"
-                  style="background-color: {{ $color }};color:white">
-
-                <i class="bi bi-folder-fill"></i>
-
-            </span>
-
-
-                                        <div class="info-box-content">
-
-                <span class="info-box-text">
-                    {{ $folder->employee?->full_name ?? 'Aucun employé' }}
-                </span>
-
-
-                                            <span class="info-box-number">
-                    Dossier #{{ $folder->id }}
-                </span>
-
-                                        </div>
-
-
-                                    </div>
-
-                                </a>
-
-                            </div>
-
-
-
-                        @endforeach
-
-
-
-                    </div>
-
-
-                </div>
-
-
+                @if($search !== '')
+                    <x-ui.badge variant="primary">
+                        Recherche: "{{ $search }}"
+                    </x-ui.badge>
+                @endif
             </div>
 
-
-        </div>
-
-
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                @foreach($folders as $folder)
+                    <x-documents.folder-card
+                        :href="route('folders.show', $folder->id)"
+                        :title="$folder->employee?->full_name ?? 'Aucun employé'"
+                        :meta="'Dossier #'.$folder->id"
+                    />
+                @endforeach
+            </div>
+        @else
+            <x-documents.empty-folder
+                :title="$search !== '' ? 'Aucun dossier trouvé' : 'Aucun dossier disponible'"
+                :description="$search !== '' ? 'Aucun dossier ne correspond à votre recherche.' : 'Les dossiers apparaîtront ici dès qu’ils seront créés.'"
+            />
+        @endif
     </div>
-
-
 @endsection

@@ -1,0 +1,1 @@
+{{-- Documents index page --}}

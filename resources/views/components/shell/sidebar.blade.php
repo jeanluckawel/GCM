@@ -43,83 +43,149 @@
 
     $user = auth()->user();
     $name = data_get($user, 'name', 'Administrateur');
-    $role = data_get($user, 'role', 'Gestion des documents');
+    $role = data_get($user, 'role', 'Gestion documentaire');
+
     $initials = collect(explode(' ', (string) $name))
         ->filter()
         ->take(2)
         ->map(fn ($part) => mb_substr($part, 0, 1))
         ->implode('');
+
     $initials = $initials !== '' ? mb_strtoupper($initials) : 'AD';
 @endphp
 
-<div class="flex h-full flex-col overflow-hidden bg-white">
-    <div class="border-b border-slate-200 px-6 py-5">
-        <div class="flex items-center gap-3">
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white">
-                <i class="bi bi-folder-fill text-lg"></i>
+<div class="flex h-full flex-col overflow-hidden bg-[#cf663e] text-[#f7e7e1]">
+
+    <!-- Logo -->
+    <div class="border-b border-[#d88362] px-6 py-5">
+
+        <div class="flex items-center gap-4">
+
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#eecabc] shadow-lg">
+                <i class="bi bi-folder-fill text-xl text-[#cf663e]"></i>
             </div>
 
-            <div class="min-w-0">
-                <p class="truncate text-sm font-semibold text-slate-900">
+            <div>
+                <h1 class="text-lg font-bold text-white">
                     GCM
-                </p>
-                <p class="truncate text-xs text-slate-500">
+                </h1>
+
+                <p class="text-xs text-[#f7e7e1]/80">
                     Gestion documentaire
                 </p>
             </div>
+
         </div>
+
     </div>
 
-    <div class="flex-1 overflow-y-auto px-3 py-4">
-        <div class="space-y-6">
+    <!-- Navigation -->
+    <div class="flex-1 overflow-y-auto px-4 py-6">
+
+        <div class="space-y-8">
+
+            <!-- Navigation principale -->
             <div>
-                <p class="px-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+
+                <p class="mb-3 px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#eecabc]">
                     Navigation principale
                 </p>
 
-                <div class="mt-2 space-y-1">
+                <div class="space-y-2">
+
                     @foreach($items as $item)
-                        <x-navigation.sidebar-item :href="$item['href']" :active="$item['active']">
-                            <x-slot:icon>{!! $item['icon'] !!}</x-slot:icon>
-                            {{ $item['label'] }}
-                        </x-navigation.sidebar-item>
+
+                        <a href="{{ $item['href'] }}"
+                           class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200
+                           {{ $item['active']
+                                ? 'bg-[#eecabc] text-[#cf663e] shadow-lg'
+                                : 'text-[#f7e7e1] hover:bg-[#d88362] hover:translate-x-1' }}">
+
+                            <span class="text-lg">
+                                {!! $item['icon'] !!}
+                            </span>
+
+                            <span class="font-medium">
+                                {{ $item['label'] }}
+                            </span>
+
+                        </a>
+
                     @endforeach
+
                 </div>
+
             </div>
 
+            <!-- Navigation secondaire -->
             <div>
-                <p class="px-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+
+                <p class="mb-3 px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#eecabc]">
                     Navigation secondaire
                 </p>
 
-                <div class="mt-2 space-y-1">
+                <div class="space-y-2">
+
                     @foreach($secondaryItems as $item)
-                        <x-navigation.sidebar-item :href="$item['href']" :active="$item['active']">
-                            <x-slot:icon>{!! $item['icon'] !!}</x-slot:icon>
-                            {{ $item['label'] }}
-                        </x-navigation.sidebar-item>
+
+                        <a href="{{ $item['href'] }}"
+                           class="group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200
+                           {{ $item['active']
+                                ? 'bg-[#eecabc] text-[#cf663e] shadow-lg'
+                                : 'text-[#f7e7e1] hover:bg-[#d88362] hover:translate-x-1' }}">
+
+                            <span class="text-lg">
+                                {!! $item['icon'] !!}
+                            </span>
+
+                            <span class="font-medium">
+                                {{ $item['label'] }}
+                            </span>
+
+                        </a>
+
                     @endforeach
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
 
-    <div class="border-t border-slate-200 p-4">
-        <div class="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
-            <x-ui.avatar :initials="$initials" size="md" />
+    <!-- Utilisateur -->
+    <div class="border-t border-[#d88362] p-4">
+
+        <div class="flex items-center gap-3 rounded-2xl bg-[#d88362]/30 p-3 backdrop-blur">
+
+            <x-ui.avatar
+                :initials="$initials"
+                size="md"
+            />
 
             <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium text-slate-900">
+
+                <p class="truncate text-sm font-semibold text-white">
                     {{ $name }}
                 </p>
-                <p class="truncate text-xs text-slate-500">
+
+                <p class="truncate text-xs text-[#f7e7e1]/80">
                     {{ $role }}
                 </p>
+
             </div>
 
-            <x-ui.button href="#" variant="ghost" size="sm">
+            <a href="#"
+               class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eecabc] text-[#cf663e] transition hover:bg-[#e9bcaa]">
+
                 <i class="bi bi-box-arrow-right"></i>
-            </x-ui.button>
+
+            </a>
+
         </div>
+
     </div>
+
 </div>
+
